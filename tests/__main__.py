@@ -1,5 +1,4 @@
 import time
-
 import pydirectinput
 
 
@@ -83,10 +82,15 @@ def relative_mouse():
     time.sleep(3)
     pydirectinput.moveTo(1150, 0, relative=True)
 
+def float_coords():
+    pydirectinput.moveTo(450.5, 450.5, relative=False)
+    time.sleep(1)
+    pydirectinput.click(500.5, 500.5, relative=False)
+    
 
 if __name__ == '__main__':
     
-    time.sleep(4)
+    time.sleep(1)
     #trace_square()
     #time.sleep(1)
     #mouse_return_accuracy()
@@ -98,7 +102,7 @@ if __name__ == '__main__':
     #basic_click()
     #time.sleep(6)
     #arrow_keys()
-    time.sleep(1)
+    # time.sleep(1)
     relative_mouse()
 
     

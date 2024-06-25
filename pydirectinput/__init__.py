@@ -246,6 +246,23 @@ def _genericPyDirectInputChecks(wrappedFunction):
     return wrapper
 
 
+def ensure_int_args(wrappedFunction):
+    @functools.wraps(wrappedFunction)
+    def wrapper(*args, **kwargs):
+        bound_args = inspect.signature(wrappedFunction).bind(*args, **kwargs)
+        bound_args.apply_defaults()
+
+        if 'x' in bound_args.arguments:
+            if isinstance(bound_args.arguments['x'], float):
+                bound_args.arguments['x'] = int(bound_args.arguments['x'])
+        if 'y' in bound_args.arguments:
+            if isinstance(bound_args.arguments['y'], float):
+                bound_args.arguments['y'] = int(bound_args.arguments['y'])
+
+        return wrappedFunction(*bound_args.args, **bound_args.kwargs)
+    return wrapper
+
+
 # Helper Functions
 
 def _to_windows_coordinates(x=0, y=0):
@@ -276,6 +293,7 @@ def size():
 
 # Ignored parameters: duration, tween, logScreenshot
 @_genericPyDirectInputChecks
+@ensure_int_args
 def mouseDown(x=None, y=None, button=PRIMARY, duration=None, tween=None, logScreenshot=None, _pause=True):
     if not x is None or not y is None:
         moveTo(x, y)
@@ -300,6 +318,7 @@ def mouseDown(x=None, y=None, button=PRIMARY, duration=None, tween=None, logScre
 
 # Ignored parameters: duration, tween, logScreenshot
 @_genericPyDirectInputChecks
+@ensure_int_args
 def mouseUp(x=None, y=None, button=PRIMARY, duration=None, tween=None, logScreenshot=None, _pause=True):
     if not x is None or not y is None:
         moveTo(x, y)
@@ -324,6 +343,7 @@ def mouseUp(x=None, y=None, button=PRIMARY, duration=None, tween=None, logScreen
 
 # Ignored parameters: duration, tween, logScreenshot
 @_genericPyDirectInputChecks
+@ensure_int_args
 def click(x=None, y=None, clicks=1, interval=0.0, button=PRIMARY, duration=None, tween=None, logScreenshot=None,
           _pause=True):
     if not x is None or not y is None:
@@ -381,6 +401,7 @@ def tripleClick(x=None, y=None, interval=0.0, button=LEFT, duration=0.0, tween=N
 # Use the relative flag to do a raw win32 api relative movement call (no MOUSEEVENTF_ABSOLUTE flag), which may be more 
 # appropriate for some applications. Note that this may produce inexact results depending on mouse movement speed.
 @_genericPyDirectInputChecks
+@ensure_int_args
 def moveTo(x=None, y=None, duration=None, tween=None, logScreenshot=False, _pause=True, relative=False):
     if not relative:
         x, y = position(x, y)  # if only x or y is provided, will keep the current position for the other axis
@@ -400,6 +421,7 @@ def moveTo(x=None, y=None, duration=None, tween=None, logScreenshot=False, _paus
 # Use the relative flag to do a raw win32 api relative movement call (no MOUSEEVENTF_ABSOLUTE flag), which may be more 
 # appropriate for some applications.
 @_genericPyDirectInputChecks
+@ensure_int_args
 def moveRel(xOffset=None, yOffset=None, duration=None, tween=None, logScreenshot=False, _pause=True, relative=False):
     if not relative:
         x, y = position()
@@ -434,6 +456,7 @@ move = moveRel
 # Ignored parameters: logScreenshot
 # Missing feature: auto shift for special characters (ie. '!', '@', '#'...)
 @_genericPyDirectInputChecks
+@ensure_int_args
 def keyDown(key, logScreenshot=None, _pause=True):
     if not key in KEYBOARD_MAPPING or KEYBOARD_MAPPING[key] is None:
         return
@@ -476,6 +499,7 @@ def keyDown(key, logScreenshot=None, _pause=True):
 # Ignored parameters: logScreenshot
 # Missing feature: auto shift for special characters (ie. '!', '@', '#'...)
 @_genericPyDirectInputChecks
+@ensure_int_args
 def keyUp(key, logScreenshot=None, _pause=True):
     if not key in KEYBOARD_MAPPING or KEYBOARD_MAPPING[key] is None:
         return
@@ -519,6 +543,7 @@ def keyUp(key, logScreenshot=None, _pause=True):
 # Ignored parameters: logScreenshot
 # nearly identical to PyAutoGUI's implementation
 @_genericPyDirectInputChecks
+@ensure_int_args
 def press(keys, presses=1, interval=0.0, logScreenshot=None, _pause=True):
     if type(keys) == str:
         if len(keys) > 1:
@@ -555,6 +580,7 @@ def press(keys, presses=1, interval=0.0, logScreenshot=None, _pause=True):
 # Ignored parameters: logScreenshot
 # nearly identical to PyAutoGUI's implementation
 @_genericPyDirectInputChecks
+@ensure_int_args
 def typewrite(message, interval=0.0, logScreenshot=None, _pause=True):
     interval = float(interval)
     for c in message:
